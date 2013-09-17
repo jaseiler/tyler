@@ -1,14 +1,27 @@
 from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.http import HttpResponseRedirect
 from django.utils.translation import ugettext_lazy as _
+from django.shortcuts import render, render_to_response
 
 from model_utils.choices import Choices
 from model_utils.models import StatusModel, TimeStampedModel
 from taggit.managers import TaggableManager
+from django.conf.urls.static import static
 
 from members.models import Member
+from .forms import UploadFileForm, CompanionForm, Article
 
-
+@receiver(post_save, sender=User)
+def create_companion(sender, **kwargs):
+    if kwargs['created']:
+        user = kwargs['instance']
+        paper = Article()
+        paper.save()
+        
 class Collaborator(TimeStampedModel):
     member = models.ForeignKey(Member, null=True, blank=True,
             help_text=_(u'Member account for a collaborator who is also a RunMyCode member'))
@@ -23,37 +36,10 @@ class Collaborator(TimeStampedModel):
         ordering = ['name']
         verbose_name = _(u'collaborator')
         verbose_name_plural = _(u'collaborators')
-
-
-class CompanionArticle(StatusModel, TimeStampedModel):
-    corresponding_author = models.ForeignKey(Member, help_text=_(u'The primary point of contact'))
-    collaborators = models.ManyToManyField(Collaborator, blank=True, null=True)
-
-    STATUS = Choices('active', 'inactive')
-    title = models.CharField(max_length=500, help_text=_(u'Title of the publication'))
-    abstract = models.TextField(max_length=5000)
-    document = models.FileField(upload_to='papers', blank=True)
-    journal = models.CharField(blank=True, max_length=500, help_text=_(u'Journal Name'))
-    article_url = models.URLField(blank=True, help_text=_(u'URL to the paper.'))
-    slug = models.SlugField(unique=True)
-    tags = TaggableManager(blank=True)
-    legacy_id = models.IntegerField(blank=True, null=True)
-
-    def __unicode__(self):
-        return self.title
-
-    def get_absolute_url(self):
-        return reverse('rmc_companionpage', args=(self.id) )
-
-    class Meta(object):
-        ordering = ['title']
-        verbose_name = _(u'companion page')
-        verbose_name_plural = _(u'companion pages')
-
-
+        
 class SupportingMaterial(StatusModel, TimeStampedModel):
     STATUS = Choices('active', 'inactive')
-    companion_article = models.ForeignKey(CompanionArticle)
+    companion_article = models.ForeignKey(Article)
     name = models.CharField(max_length=500)
     archive_file = models.FileField(upload_to='materials', blank=True)
     explanatory_text = models.TextField(max_length=5000, blank=True)
@@ -64,4 +50,23 @@ class SupportingMaterial(StatusModel, TimeStampedModel):
 
     def __unicode__(self):
         return self.name
+        
+def handle_uploaded_file(request):
+    """ stub """
+    # maybe this didn't get checked in yet?
+    pass
 
+def search_doi(request):
+	#http://doi.crossref.org/servlet/query?pid=jas2385@columbia.edu&format=info&id={{DOI}}
+	return render_to_response('create.html', {'form': form})
+
+def upload_file(request):
+	CompanionForm(request.POST) #UploadFileForm(request.POST)
+	if request.method == 'POST':
+        	form = CompanionForm() #UploadFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            handle_uploaded_file(request.FILES['file'])
+            return HttpResponseRedirect('/success/url/')
+	else:
+		form = CompanionForm( extra=request.POST.get('extra_author_count')) #UploadFileForm()
+	return render_to_response('create.html', {'form': form})
