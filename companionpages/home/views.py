@@ -8,7 +8,7 @@ from news.models import News
 from supportingmaterials.models import Article
 
 class HomeView(TemplateView):
-    template_name="base.html"
+    template_name = "base.html"
 
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
@@ -17,16 +17,17 @@ class HomeView(TemplateView):
         context['companion_article_list'] = Article.objects.all().order_by('-modified')[:10]
         return context
 
+
 class FaqView(ListView):
     model = Faq
     context_object_name = 'faq_list'
 
-    template_name='faq.html'
+    template_name = 'faq.html'
+
 
 class AboutView(TemplateView):
-    template_name="about.html"
+    template_name = "about.html"
 
-#class CompanionView(TemplateView):
-#	form = CompanionForm(extra=request.POST.get('extra_field_count'))
-#	template_name='create.html'
-#	return render(request, "template", { 'form': form })
+
+class CompanionView(TemplateView):
+    template_name = "create.html"

@@ -5,10 +5,11 @@ from os import environ as env
 from os.path import abspath, dirname, join, normpath
 import dj_database_url
 
+# flake8: noqa
 
 DJANGO_ROOT = dirname(abspath(__file__))
 SITE_ROOT = dirname(DJANGO_ROOT)
-SITE_TITLE = 'RunMyCode'
+SITE_TITLE = 'ResearchCompendia'
 
 sys.path.append(DJANGO_ROOT)
 
