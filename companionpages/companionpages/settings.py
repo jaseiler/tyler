@@ -20,7 +20,7 @@ TEMPLATE_DEBUG = DEBUG
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
-ADMINS = ['jaseiler', 'jenn.seiler@gmail.com'] #[(admin.split('@')[0], admin) for admin in env.get('ADMINS', 'tyler@starkravingsane.org').split(',')]
+ADMINS = [(admin.split('@')[0], admin) for admin in env.get('ADMINS', 'tyler@starkravingsane.org').split(',')]
 MANAGERS = ADMINS
 
 # dj_database_url will pull from the DATABASE_URL environment variable
@@ -187,6 +187,10 @@ THIRD_PARTY_APPS = (
     'storages',
     'gravatar',
     'taggit',
+    'autocomplete_light',
+    'xml',
+    'logging',
+    'urllib2'
 )
 
 # Apps specific for this project go here.
