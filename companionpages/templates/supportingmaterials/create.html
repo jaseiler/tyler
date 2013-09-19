@@ -29,11 +29,16 @@
   <input class="button" type="submit" style="margin-top:15px" value="Save Paper Data"/>
 </form>-->
 
-<form method='post' action=''>{% csrf_token %}
-<label>DOI or PMID </label> {{ form.doi }}&nbsp; or &nbsp;
+<form method='get' action="{% url 'rmc_create_doi' %}" style="display:inline-block;float:left;margin:0">
+<label>DOI </label> {{ form.doi }}
+<input type="submit" value="Search">&nbsp; or &nbsp;
+</form>
+<form method='post' action="{% url 'rmc_create' %}" style="display:inline-block;float:left;margin:0">{% csrf_token %}
 <label>Link to paper </label> {{ form.article_url }}&nbsp; or &nbsp;
 <label>Upload paper </label> {{ form.document }} </br>
-<input type="button" value="Lookup" id="code" class="save" style="float:right;margin-top:-27px;margin-right:80px;"/></p>
+<input type="submit" value="Search" id="code" class="Search" style="float:right;margin-top:-27px;margin-right:120px;"/></p>
+</form>
+<form method='post' action="{% url 'rmc_create' %}" style="display:inline-block;float:left">{% csrf_token %}
 <label>Title <span style="color:red">*</span></label>{{ form.title }}</br>
 
 <label>Type of paper <span style="color:red">*</span></label>

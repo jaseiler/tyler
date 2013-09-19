@@ -25,7 +25,7 @@ class CompanionForm(ModelForm):
             'journal' : forms.TextInput(attrs = {'placeholder': 'journal name','style':'width:400px;'}),
             'document' : forms.FileInput(attrs = {'style':'width:400px; float:right;'}),
             'paper_type' : RadioSelect(),
-            'pub_date' : forms.DateInput(format='%M %Y', attrs = {'placeholder': 'month year','style':'width:100px;'}),
+            'pub_date' : forms.DateInput(format=['%m %Y'], attrs = {'placeholder': 'month year','style':'width:100px;'}),
             'volume' : forms.TextInput(attrs = {'placeholder': 'vol','style':'width:100px;'}),
             'issue' : forms.TextInput(attrs = {'placeholder': 'issue#','style':'width:100px;'}),
             'pages' : forms.TextInput(attrs = {'placeholder': '1550-1487','style':'width:100px;'}),

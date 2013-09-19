@@ -189,6 +189,8 @@ THIRD_PARTY_APPS = (
     'taggit',
     'autocomplete_light',
     'xml',
+    'lxml',
+    're',
     'logging',
     'urllib2'
 )
