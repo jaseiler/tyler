@@ -210,7 +210,7 @@ if DEBUG:
         'debug_toolbar',
         'django.contrib.webdesign',
         'django.contrib.admindocs',
-        'django_extensions',
+        #'django_extensions',
     )
     INTERNAL_IPS = ('127.0.0.1',)
     MIDDLEWARE_CLASSES += (
