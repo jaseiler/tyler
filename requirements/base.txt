@@ -22,6 +22,6 @@ django-gravatar
 south
 django-taggit
 django-autocomplete-light
-re
-urllib2
-xml
+#re
+#urllib2
+#xml
