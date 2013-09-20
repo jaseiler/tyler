@@ -1,8 +1,16 @@
 *.py[cod]
-
+.DS_Store
 *.swp
+*~
 
+# heroku admin settings
 .env
+env
+
+# sphinx
+_build
+docs/companionpages.*
+
 
 # collectstatic
 staticfiles

@@ -6,7 +6,6 @@ from django.views import generic
 from django.views.generic.base import TemplateView
 from django.http import HttpResponse
 from django.shortcuts import render
-from BeautifulSoup import BeautifulSoup
 import urllib2, re
 from xml import etree
 from xml.etree import ElementTree as ET

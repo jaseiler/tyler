@@ -7,6 +7,7 @@ from .models import Faq
 from news.models import News
 from supportingmaterials.models import Article
 
+
 class HomeView(TemplateView):
     template_name = "base.html"
 

@@ -8,35 +8,106 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Collaborator'
-        db.create_table(u'supportingmaterials_collaborator', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('model_utils.fields.AutoCreatedField')(default=datetime.datetime.now)),
-            ('modified', self.gf('model_utils.fields.AutoLastModifiedField')(default=datetime.datetime.now)),
-            ('member', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['members.Member'], null=True, blank=True)),
-            ('name', self.gf('django.db.models.fields.TextField')(max_length=200)),
-            ('coder', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('author', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal(u'supportingmaterials', ['Collaborator'])
+        # Adding field 'Article.paper_type'
+        db.add_column(u'supportingmaterials_article', 'paper_type',
+                      self.gf('django.db.models.fields.CharField')(default='1', max_length=45),
+                      keep_default=False)
 
-        # Adding M2M table for field collaborators on 'CompanionArticle'
-        m2m_table_name = db.shorten_name(u'supportingmaterials_companionarticle_collaborators')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('companionarticle', models.ForeignKey(orm[u'supportingmaterials.companionarticle'], null=False)),
-            ('collaborator', models.ForeignKey(orm[u'supportingmaterials.collaborator'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['companionarticle_id', 'collaborator_id'])
+        # Adding field 'Article.pub_date'
+        db.add_column(u'supportingmaterials_article', 'pub_date',
+                      self.gf('django.db.models.fields.DateField')(default='2009-12-10'),
+                      keep_default=False)
 
+        # Adding field 'Article.volume'
+        db.add_column(u'supportingmaterials_article', 'volume',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=50),
+                      keep_default=False)
+
+        # Adding field 'Article.issue'
+        db.add_column(u'supportingmaterials_article', 'issue',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=50),
+                      keep_default=False)
+
+        # Adding field 'Article.pages'
+        db.add_column(u'supportingmaterials_article', 'pages',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=50),
+                      keep_default=False)
+
+        # Adding field 'Article.keywords'
+        db.add_column(u'supportingmaterials_article', 'keywords',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=500, blank=True),
+                      keep_default=False)
+
+        # Adding field 'Article.research_area'
+        db.add_column(u'supportingmaterials_article', 'research_area',
+                      self.gf('django.db.models.fields.CharField')(default='32', max_length=100),
+                      keep_default=False)
+
+        # Adding field 'Article.research_area_2'
+        db.add_column(u'supportingmaterials_article', 'research_area_2',
+                      self.gf('django.db.models.fields.CharField')(default='32', max_length=100),
+                      keep_default=False)
+
+        # Adding field 'Article.authors'
+        db.add_column(u'supportingmaterials_article', 'authors',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=500),
+                      keep_default=False)
+
+        # Adding field 'Article.coders'
+        db.add_column(u'supportingmaterials_article', 'coders',
+                      self.gf('django.db.models.fields.CharField')(default='', max_length=500),
+                      keep_default=False)
+
+
+        # Changing field 'Article.doi'
+        db.alter_column(u'supportingmaterials_article', 'doi', self.gf('django.db.models.fields.CharField')(default='',max_length=500))
+
+        # Changing field 'Article.title'
+        db.alter_column(u'supportingmaterials_article', 'title', self.gf('django.db.models.fields.CharField')(default='',max_length=500))
+
+        # Changing field 'Article.abstract_text'
+        db.alter_column(u'supportingmaterials_article', 'abstract_text', self.gf('django.db.models.fields.TextField')(default='',max_length=2000))
 
     def backwards(self, orm):
-        # Deleting model 'Collaborator'
-        db.delete_table(u'supportingmaterials_collaborator')
+        # Deleting field 'Article.paper_type'
+        db.delete_column(u'supportingmaterials_article', 'paper_type')
 
-        # Removing M2M table for field collaborators on 'CompanionArticle'
-        db.delete_table(db.shorten_name(u'supportingmaterials_companionarticle_collaborators'))
+        # Deleting field 'Article.pub_date'
+        db.delete_column(u'supportingmaterials_article', 'pub_date')
 
+        # Deleting field 'Article.volume'
+        db.delete_column(u'supportingmaterials_article', 'volume')
+
+        # Deleting field 'Article.issue'
+        db.delete_column(u'supportingmaterials_article', 'issue')
+
+        # Deleting field 'Article.pages'
+        db.delete_column(u'supportingmaterials_article', 'pages')
+
+        # Deleting field 'Article.keywords'
+        db.delete_column(u'supportingmaterials_article', 'keywords')
+
+        # Deleting field 'Article.research_area'
+        db.delete_column(u'supportingmaterials_article', 'research_area')
+
+        # Deleting field 'Article.research_area_2'
+        db.delete_column(u'supportingmaterials_article', 'research_area_2')
+
+        # Deleting field 'Article.authors'
+        db.delete_column(u'supportingmaterials_article', 'authors')
+
+        # Deleting field 'Article.coders'
+        db.delete_column(u'supportingmaterials_article', 'coders')
+
+
+        # Changing field 'Article.doi'
+        db.alter_column(u'supportingmaterials_article', 'doi', self.gf('django.db.models.fields.URLField')(max_length=200))
+
+        # Changing field 'Article.title'
+        db.alter_column(u'supportingmaterials_article', 'title', self.gf('django.db.models.fields.CharField')(max_length=100))
+
+        # Changing field 'Article.abstract_text'
+        db.alter_column(u'supportingmaterials_article', 'abstract_text', self.gf('django.db.models.fields.TextField')(max_length=500))
 
     models = {
         u'auth.group': {
@@ -89,37 +160,37 @@ class Migration(SchemaMigration):
             'user': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['auth.User']", 'unique': 'True'}),
             'website': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'})
         },
-        u'supportingmaterials.collaborator': {
-            'Meta': {'ordering': "['name']", 'object_name': 'Collaborator'},
-            'author': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'coder': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'member': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['members.Member']", 'null': 'True', 'blank': 'True'}),
-            'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
-            'name': ('django.db.models.fields.TextField', [], {'max_length': '200'})
-        },
-        u'supportingmaterials.companionarticle': {
-            'Meta': {'ordering': "['title']", 'object_name': 'CompanionArticle'},
-            'abstract': ('django.db.models.fields.TextField', [], {'max_length': '5000'}),
+        u'supportingmaterials.article': {
+            'Meta': {'object_name': 'Article'},
+            'abstract_text': ('django.db.models.fields.TextField', [], {'max_length': '2000'}),
             'article_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'}),
-            'collaborators': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['supportingmaterials.Collaborator']", 'null': 'True', 'blank': 'True'}),
+            'authors': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
+            'coders': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
             'corresponding_author': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['members.Member']"}),
             'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
             'document': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'blank': 'True'}),
+            'doi': ('django.db.models.fields.CharField', [], {'max_length': '500', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'issue': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
             'journal': ('django.db.models.fields.CharField', [], {'max_length': '500', 'blank': 'True'}),
+            'keywords': ('django.db.models.fields.CharField', [], {'max_length': '500', 'blank': 'True'}),
             'legacy_id': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'modified': ('model_utils.fields.AutoLastModifiedField', [], {'default': 'datetime.datetime.now'}),
+            'pages': ('django.db.models.fields.CharField', [], {'max_length': '50'}),
+            'paper_type': ('django.db.models.fields.CharField', [], {'default': "'NULL'", 'max_length': '45'}),
+            'pub_date': ('django.db.models.fields.DateField', [], {}),
+            'research_area': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'research_area_2': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '50'}),
             'status': ('model_utils.fields.StatusField', [], {'default': "'active'", 'max_length': '100', u'no_check_for_status': 'True'}),
             'status_changed': ('model_utils.fields.MonitorField', [], {'default': 'datetime.datetime.now', u'monitor': "u'status'"}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '500'})
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
+            'volume': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         u'supportingmaterials.supportingmaterial': {
             'Meta': {'object_name': 'SupportingMaterial'},
             'archive_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'blank': 'True'}),
-            'companion_article': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['supportingmaterials.CompanionArticle']"}),
+            'companion_article': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['supportingmaterials.Article']"}),
             'created': ('model_utils.fields.AutoCreatedField', [], {'default': 'datetime.datetime.now'}),
             'explanatory_text': ('django.db.models.fields.TextField', [], {'max_length': '5000', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
