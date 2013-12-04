@@ -12,14 +12,9 @@ Contents:
    :maxdepth: 2
 
    readme
-<<<<<<< HEAD
-   installation
-   contributing
-=======
    contributing
    developmentsetup
    deployment
->>>>>>> upstream/master
    authors
    history
 

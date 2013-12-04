@@ -5,11 +5,7 @@ from os import environ as env
 from os.path import abspath, dirname, join, normpath
 import dj_database_url
 
-<<<<<<< HEAD
 # flake8: noqa
-=======
-#  flake8: noqa
->>>>>>> upstream/master
 
 DJANGO_ROOT = dirname(abspath(__file__))
 SITE_ROOT = dirname(DJANGO_ROOT)
@@ -225,16 +221,13 @@ THIRD_PARTY_APPS = (
     'crispy_forms',
     'avatar',
     'taggit',
-<<<<<<< HEAD
     'autocomplete_light',
     'xml',
     're',
     'urllib2'
-=======
     'json_field',
     'haystack',
     'south',
->>>>>>> upstream/master
 )
 
 # Apps specific for this project go here.
@@ -264,7 +257,7 @@ if DEBUG:
         'debug_toolbar',
         'django.contrib.webdesign',
         'django.contrib.admindocs',
-        #'django_extensions',
+        'django_extensions',
     )
     INTERNAL_IPS = ('127.0.0.1',)
     MIDDLEWARE_CLASSES += (
