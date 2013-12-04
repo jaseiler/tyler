@@ -17,8 +17,13 @@ clean-pyc:
 lint:
 	flake8 companionpages
 
+<<<<<<< HEAD
 test:
 	companionpages/manage.py test
+=======
+test: lint
+	companionpages/manage.py test --traceback --debug=DEBUG
+>>>>>>> upstream/master
 
 docs:
 	rm -f docs/companionpages.rst

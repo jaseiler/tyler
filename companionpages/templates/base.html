@@ -3,27 +3,36 @@
 
 <html lang="en">
 <head>
-  <title>{% block title %}{{ site_title }}{% endblock title %}</title>
+  <title>{% block title %}ResearchCompendia{% endblock title %}</title>
 
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="XAZ083kgqNd3n9GHCotn8k-_9uw4IW5EfsgRDF7sn1k" />
+  <script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-44934930-3']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+</script>
   <!-- Le styles -->
-  <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,700italic,400italic|Ubuntu:400,500,700,400italic,500italic,700italic' rel='stylesheet' type='text/css'>
-  
-  <!-- TODO figure out whether I should use CDN and if so, how to link it conditionally -->
+
   <!--
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
   -->
   <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
-  <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
-  <link href="//jennseiler.com/rmc.css" rel="stylesheet">
-  <script src="http://code.jquery.com/jquery-latest.js"></script>
-    
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" rel="stylesheet">
+
   <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
   <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
   <![endif]-->
-  <link href="{% static 'favicon.ico' %}" rel="shortcut icon" type="image/x-icon" />
   <link href="{% static 'css/project.css' %}" rel="stylesheet">
   {% block extra_css %}
   <!-- Use this to quickly test CSS changes in a template, then move to project.css -->
@@ -32,12 +41,71 @@
 
 <body>
 
-{% include 'header.html' %}
+<nav class="navbar navbar-inverse navbar-fixed-top rc-navbar-top" role="navigation">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="{% url 'home:base' %}">
+        <div>ResearchCompendia
+        <div class="fa fa-code"></div>
+        <div class="fa fa-bar-chart-o"></div>
+        <div class="fa fa-cloud-upload"></div>
+      </div>
+    </a>
+  </div>
+
+  <div class="collapse navbar-collapse navbar-ex1-collapse">
+    <ul class="nav navbar-nav">
+      <li><a href="{% url 'compendia:list' %}">Browse compendia</a></li>
+      <li><a href="{% url 'compendia:create' %}">Create compendia</a></li>
+    </ul>
+    <form class="navbar-form navbar-left" role="search" method="get" action="{% url 'haystack_search' %}">
+      <div class="form-group">
+        <label class="sr-only" for="q">Search</label>
+        <input type="text" class="form-control" placeholder="Search" name="q">
+      </div>
+    </form>
+
+    <ul class="nav navbar-nav pull-right">
+      {% if request.user.is_authenticated %}
+      <li>
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#">{{ user.email }}<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'users:detail' request.user.id  %}">My Account</a></li>
+            <li><a href="{% url 'account_logout'  %}">Logout</a></li>
+            {% if user.is_staff %}
+            <li><a href="{% url 'admin:index' %}">Admin</a></li>
+            {% endif %}
+          </ul>
+      </li>
+      {% else %}
+      <li><a href="{% url 'account_signup' %}">Register</a></li>
+      <li><a href="{% url 'account_login' %}">Login</a></li>
+      {% endif %}
+    </ul>
+  </div><!--/collapse nav-collapse navbar-ex1-collapse -->
+</nav><!-- navbar -->
 
 
-<div class="container rmc-light">
+<div class="container">
+
+{% block messages %}
+{% if messages %}
+<ul class="messagelist">
+  {% for message in messages %}
+    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock messages %}
+
 {% block content %}
 
+<<<<<<< HEAD
 <div class="row">
   <div class="jumbotron">
     <div class="rmc-green-font">
@@ -60,14 +128,56 @@
     </div>
     <form action="{% url 'rmc_create' %}" method="get">
       <button type='submit' class='btn btn-success btn-lg btn-block'>Create your own compendia page</button>   
+=======
+<div class="jumbotron">
+    <h1>Research Compendia</h1>
+    <p><i>Help science stand on your shoulders</i></p>
+    <p>Irreproducible science is bad science. Research that is easy to build upon is more 
+    citeable and more influential. As computational analysis and methods, and digital data archival 
+    have become the standard in scientific research, it is important that this information
+    is archived, curated, and documented in a way that most Scientific journals do not 
+    currently support.</p>
+    
+    <p>With ResearchCompendia we provide tools for researchers 
+    to connect their data, code and computational methods to their published or soon to be 
+    published research in an elegant, convenient, and easily citeable form.</p>
+
+    <form action="{% url 'compendia:create' %}" method="get">
+        <button type='submit' class='btn btn-primary btn-lg'>Create Research Compendium</button>
+>>>>>>> upstream/master
     </form>
-  </div> <!-- jumbotron -->
-</div> <!-- /row jumbotron -->
+
+    <p>Want to know more? Check out our <a href="./faq/">FAQs</a>.</p>
+</div> <!-- /jumbotron -->
 
 {% endblock content %}
 </div> <!-- /container -->
 
-{% include 'footer.html' %}
+
+
+<nav class="navbar navbar-inverse navbar-fixed-bottom rc-navbar-bottom" role="navigation">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <a class="navbar-brand" href="{% url 'home:base' %}">
+      <div>ResearchCompendia</div>
+    </a>
+  </div>
+  <div class="collapse navbar-collapse navbar-ex1-collapse">
+    <ul class="nav navbar-nav">
+      <li><a href="{% url 'home:about' %}" class="navbar-link">About</a></li>
+      <li><a href="{% url 'home:faq' %}" class="navbar-link">FAQs</a></li>
+      <li><a href="{% url 'home:contact' %}">Contact</a></li>
+      <li><a href="{% url 'terms' %}" class="navbar-link">Terms of Use</a></li>
+      <li><a href="{% url 'home:partners' %}" class="navbar-link">Partners</a></li>
+      <li><a href="{% url 'home:developers' %}" class="navbar-link">Developers</a></li>
+    </ul>
+  </div>
+</nav>
 
 <!-- Le javascript
 ================================================== -->
@@ -80,5 +190,7 @@
 <script src="{% static 'js/jquery.min.js' %}"></script>
 <script src="{% static 'js/bootstrap.min.js' %}"></script>
 <script src="{% static 'js/project.js' %}"></script>
+{% block extrajs %}
+{% endblock extrajs %}
 </body>
 </html>

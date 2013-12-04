@@ -1,9 +1,7 @@
-from django.conf import settings
-from django.utils import timezone
 from django.views.generic import ListView
-from django.views.generic import TemplateView
 
 from .models import Faq
+<<<<<<< HEAD
 from news.models import News
 from supportingmaterials.models import Article
 
@@ -17,6 +15,9 @@ class HomeView(TemplateView):
         context['site_title'] = settings.SITE_TITLE
         context['companion_article_list'] = Article.objects.all().order_by('-modified')[:10]
         return context
+=======
+
+>>>>>>> upstream/master
 
 
 class FaqView(ListView):
@@ -24,6 +25,7 @@ class FaqView(ListView):
     context_object_name = 'faq_list'
 
     template_name = 'faq.html'
+<<<<<<< HEAD
 
 
 class AboutView(TemplateView):
@@ -32,3 +34,5 @@ class AboutView(TemplateView):
 
 class CompanionView(TemplateView):
     template_name = "create.html"
+=======
+>>>>>>> upstream/master
