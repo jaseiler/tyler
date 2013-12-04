@@ -1,4 +1,3 @@
--r requirements/base.txt
+# heroku requires a requirements.txt file to live in this directory
 
-# heroku
-django-toolbelt
+-r requirements/base.txt

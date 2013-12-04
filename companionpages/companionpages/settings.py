@@ -5,22 +5,24 @@ from os import environ as env
 from os.path import abspath, dirname, join, normpath
 import dj_database_url
 
+# flake8: noqa
 
 DJANGO_ROOT = dirname(abspath(__file__))
 SITE_ROOT = dirname(DJANGO_ROOT)
-SITE_TITLE = 'RunMyCode'
+SITE_TITLE = 'ResearchCompendia'
 
 sys.path.append(DJANGO_ROOT)
 
 DEBUG = True if env.get('DEBUG', False) == 'True' else False
 TEMPLATE_DEBUG = DEBUG
+REMOTE_DEBUG = True if env.get('REMOTE_DEBUG', False) == 'True' else False
 
 # heroku suggested setting
 # Honor the 'X-Forwarded-Proto' header for request.is_secure()
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
-ADMINS = ['jaseiler', 'jenn.seiler@gmail.com'] #[(admin.split('@')[0], admin) for admin in env.get('ADMINS', 'tyler@starkravingsane.org').split(',')]
+ADMINS = [(admin.split('@')[0], admin) for admin in env.get('ADMINS', 'tyler@starkravingsane.org').split(',')]
 MANAGERS = ADMINS
 
 # dj_database_url will pull from the DATABASE_URL environment variable
@@ -59,14 +61,18 @@ DEFAULT_FROM_EMAIL = env.get('DEFAULT_FROM_EMAIL', 'devtyler@codersquid.com')
 ENVELOPE_CONTACT_CHOICES = (
     ('',    u"Choose"),
     (10,    u"A question regarding the website"),
-    (20,    u"A question regarding companion pages"),
-    (None,   u"Other"),
+    (20,    u"A question regarding research compendia"),
+    (None,  u"Other"),
 )
-MAILGUN_ACCESS_KEY = env.get('MAILGUN_ACCESS_KEY')
-MAILGUN_SERVER_NAME = env.get('MAILGUN_SERVER_NAME')
-
+MAILGUN_ACCESS_KEY = env.get('MAILGUN_ACCESS_KEY', '')
+MAILGUN_SERVER_NAME = env.get('MAILGUN_SERVER_NAME', '')
 # spam catching
 HONEYPOT_FIELD_NAME = 'relatedtopics2'
+
+
+# crossref service account
+CROSSREF_PID = env.get('CROSSREF_PID', '')
+
 
 # s3 amazon static file storage settings
 AWS_STORAGE_BUCKET_NAME = env.get('AWS_STORAGE_BUCKET_NAME', 'starkravingsanermccompanion')
@@ -80,22 +86,44 @@ DEFAULT_FILE_STORAGE = env.get('DEFAULT_FILE_STORAGE', 'django.core.files.storag
 # allow collectstatic automatically put your static files in your bucket
 STATICFILES_STORAGE = env.get('STATICFILES_STORAGE', 'django.contrib.staticfiles.storage.StaticFilesStorage')
 
-#from S3 import CallingFormat
-#AWS_CALLING_FORMAT = CallingFormat.SUBDOMAIN
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-# REST_FRAMEWORK = { }
+########## AUTHENTICATION CONFIGURATION
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 2
+SOCIALACCOUNT_AVATAR_SUPPORT = 'avatar'
+########## END AUTHENTICATION CONFIGURATION
+########## Custom user app defaults
+# Select the correct user model
+AUTH_USER_MODEL = "users.User"
+LOGIN_REDIRECT_URL = "users:redirect"
+########## END Custom user app defaults
 
-# django-registration settings
-ACCOUNT_ACTIVATION_DAYS = 2
+########## SLUGLIFIER
+AUTOSLUG_SLUGIFY_FUNCTION = "slugify.slugify"
+########## END SLUGLIFIER
 
-# django-profiles
-AUTH_PROFILE_MODULE = 'members.Member'
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+     )
+}
 
-
-# django-gravatar
-GRAVATAR_DEFAULT_SIZE = 80
-#GRAVATAR_DEFAULT_IMAGE = 'https://s3.amazonaws.com/starkravingsanermccompanion/img/avatar_small.png'
-GRAVATAR_DEFAULT_IMAGE = 'http://raw.github.com/codersquid/tyler/master/companionpages/static/img/avatar_small.png'
+ELASTIC_URL = env.get('BONSAI_URL', 'http://127.0.0.1:9200')
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': ELASTIC_URL,
+        'INDEX_NAME': 'haystack',
+    },
+}
 
 
 # Absolute path to the directory static files should be collected to.
@@ -121,7 +149,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 ADMIN_MEDIA_PREFIX = join(STATIC_URL, "admin/")
 
@@ -152,17 +180,24 @@ ROOT_URLCONF = 'companionpages.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'companionpages.wsgi.application'
 
+FIXTURE_DIRS = (
+    normpath(join(SITE_ROOT, 'fixtures')),
+)
+
 TEMPLATE_DIRS = (
     normpath(join(SITE_ROOT, 'templates')),
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
+    "allauth.account.context_processors.account",
+    "allauth.socialaccount.context_processors.socialaccount",
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
+    'django.core.context_processors.request',
 )
 
 DJANGO_APPS = (
@@ -181,23 +216,40 @@ THIRD_PARTY_APPS = (
     'envelope',
     'gunicorn',
     'honeypot',
-    'profiles',
-    'registration',
-    'south',
     'storages',
-    'gravatar',
+    'rest_framework',
+    'crispy_forms',
+    'avatar',
     'taggit',
+    'autocomplete_light',
+    'xml',
+    're',
+    'urllib2'
+    'json_field',
+    'haystack',
+    'south',
 )
 
 # Apps specific for this project go here.
 LOCAL_APPS = (
+    'users',
     'home',
-    'members',
-    'news',
-    'supportingmaterials',
+    'compendia',
 )
+
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+INSTALLED_APPS += (
+    # Needs to come last for now because of a weird edge case between
+    #   South and allauth
+    'allauth',  # registration
+    'allauth.account',  # registration
+    'allauth.socialaccount',  # registration
+    #'allauth.socialaccount.providers.github',
+    #'allauth.socialaccount.providers.openid',
+    #'allauth.socialaccount.providers.persona',
+    #'allauth.socialaccount.providers.twitter',
+)
 
 if DEBUG:
     # See: https://github.com/django-debug-toolbar/django-debug-toolbar#installation
@@ -212,12 +264,13 @@ if DEBUG:
         'debug_toolbar.middleware.DebugToolbarMiddleware',
     )
     TEMPLATE_STRING_IF_INVALID = 'template_error'
-    # use local files for static rather than amazon s3
-    STATIC_URL = '/static/'
     DEBUG_TOOLBAR_CONFIG = {
         'INTERCEPT_REDIRECTS':False,
     }
-
+    # use local files for static rather than amazon s3
+    STATIC_URL = '/static/'
+    MEDIA_URL = STATIC_URL + 'media/'
+    ADMIN_MEDIA_PREFIX = join(STATIC_URL, "admin/")
 
 
 # A sample logging configuration. The only tangible logging
@@ -228,6 +281,14 @@ if DEBUG:
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+     },
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -237,16 +298,32 @@ LOGGING = {
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'verbose'
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
         }
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
+            'handlers': ['mail_admins', 'console'],
+            'level': 'INFO',
             'propagate': True,
         },
-    }
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'compendia': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
 }
 
 

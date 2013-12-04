@@ -1,37 +1,37 @@
 {% extends "base.html" %}
 {% load home_tags %}
 
-{% block title %}FAQ{% endblock %}
+{% block title %}ResearchCompendia FAQs{% endblock %}
 
 {% block content %}
 
-<h1>FAQ</h1>
+<div class="row">
+<div class="col-lg-8">
 <div class="panel-group" id="accordion">
 {% for faq in faq_list %}
-<div class="panel">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#{{ forloop.counter }}">
-            {% if forloop.first %}
-            <div class="icon-plus-sign-alt rmc-green-font" id="iconstate"> {{ faq.question }}</div>
-            {% else %}
-            <div class="icon-minus-sign-alt rmc-green-font" id="iconstate"> {{ faq.question }}</div>
-            {% endif %}
-        </a>
-      </h4>
+<div class="panel" >
+  <div class="panel-heading">
+    <h3 class="panel-title">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#{{ faq.id }}">
+        <div class="fa fa-question-circle" id="iconstate"> {{ faq.question }}</div>
+      </a>
+    </h3>
     </div> <!-- /panel-heading -->
-    {% if forloop.first %}
-    <div id="{{ forloop.counter }}" class="panel-collapse collapse in">
-    {% else %}
-    <div id="{{ forloop.counter }}" class="panel-collapse collapse">
-    {% endif %}
+    <div id="{{ faq.id }}" class="panel-collapse collapse">
       <div class="panel-body">
         {{ faq.answer|md }}
       </div> <!-- /panel-body -->
     </div> <!-- /panel-collapse -->
   </div> <!--/panel-->
 {% empty %}
-<p>There are no FAQs</p>
+<p>
+Please contact us for more information.
+</p>
 {% endfor %}
-</div> <!-- /panel-group -->
+</div>
+
+
+</div>
+
+</div> <!-- row -->
 {% endblock content %}
