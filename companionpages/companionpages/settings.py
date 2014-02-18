@@ -22,13 +22,13 @@ REMOTE_DEBUG = True if env.get('REMOTE_DEBUG', False) == 'True' else False
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
-ADMINS = [(admin.split('@')[0], admin) for admin in env.get('ADMINS', 'tyler@starkravingsane.org').split(',')]
+ADMINS = [(admin.split('@')[0], admin) for admin in env.get('ADMINS', 'compendia@starkravingsane.org').split(',')]
 MANAGERS = ADMINS
 
 # dj_database_url will pull from the DATABASE_URL environment variable
 DATABASES = {
-        'default': dj_database_url.config(default='postgres://localhost:5432/tyler'),
-        #'default': dj_database_url.config(default='sqlite:////' + SITE_ROOT + '/tyler.db'),
+        'default': dj_database_url.config(default='postgres://:5432/researchcompendia'),
+        #'default': dj_database_url.config(default='sqlite:////' + SITE_ROOT + '/researchcompendia.db'),
 }
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
@@ -57,7 +57,7 @@ USE_TZ = True
 EMAIL_BACKEND = env.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
 
 # django-envelope contact page settings
-DEFAULT_FROM_EMAIL = env.get('DEFAULT_FROM_EMAIL', 'devtyler@codersquid.com')
+DEFAULT_FROM_EMAIL = env.get('DEFAULT_FROM_EMAIL', 'compendia@codersquid.com')
 ENVELOPE_CONTACT_CHOICES = (
     ('',    u"Choose"),
     (10,    u"A question regarding the website"),
@@ -125,6 +125,22 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
+# Celery
+CELERY_RESULT_BACKEND = env.get('DJANGO_CELERY_RESULT_BACKEND', 'cache+memcached://127.0.0.1:11211/')
+BROKER_URL = env.get('DJANGO_BROKER_URL', 'amqp://guest:guest@localhost:5672//')
+CELERY_TIMEZONE = env.get('DJANGO_CELERY_TIMEZONE', 'US/Central')
+CELERY_RESULT_SERIALIZER = env.get('DJANGO_CELERY_RESULT_SERIALIZER', 'json')
+CELERY_TASK_SERIALIZER = env.get('DJANGO_CELERY_TASK_SERIALIZER', 'json')
+CELERY_DISABLE_RATE_LIMITS = env.get('DJANGO_CELERY_DISABLE_RATE_LIMITS', True)
+
+# django-markitup
+MARKITUP_FILTER = ('markdown.markdown', {'safe_mode': True})
+#MARKITUP_PREVIEW_FILTER, by default set to MARKITUP_FILTER
+MARKITUP_AUTO_PREVIEW = True
+JQUERY_URL = None # we include jquery manually in base.html template
+#QUERY_URL = 'jquery.min.js' # default is http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js
+
+
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -132,9 +148,11 @@ HAYSTACK_CONNECTIONS = {
 STATIC_ROOT = normpath(join(SITE_ROOT, 'staticfiles'))
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
-STATIC_URL = S3_URL
+if STATICFILES_STORAGE == 'storages.backends.s3boto.S3BotoStorage':
+    STATIC_URL = S3_URL
+else:
+    STATIC_URL = '/static/'
 
-#STATIC_URL = '/static/'
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 MEDIA_ROOT = normpath(join(SITE_ROOT, 'media'))
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a trailing slash.
@@ -228,6 +246,8 @@ THIRD_PARTY_APPS = (
     'json_field',
     'haystack',
     'south',
+    'markitup',
+    'flatblocks',
 )
 
 # Apps specific for this project go here.
@@ -245,10 +265,8 @@ INSTALLED_APPS += (
     'allauth',  # registration
     'allauth.account',  # registration
     'allauth.socialaccount',  # registration
-    #'allauth.socialaccount.providers.github',
-    #'allauth.socialaccount.providers.openid',
-    #'allauth.socialaccount.providers.persona',
-    #'allauth.socialaccount.providers.twitter',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.persona',
 )
 
 if DEBUG:
@@ -265,12 +283,8 @@ if DEBUG:
     )
     TEMPLATE_STRING_IF_INVALID = 'template_error'
     DEBUG_TOOLBAR_CONFIG = {
-        'INTERCEPT_REDIRECTS':False,
+        'INTERCEPT_REDIRECTS': False,
     }
-    # use local files for static rather than amazon s3
-    STATIC_URL = '/static/'
-    MEDIA_URL = STATIC_URL + 'media/'
-    ADMIN_MEDIA_PREFIX = join(STATIC_URL, "admin/")
 
 
 # A sample logging configuration. The only tangible logging
@@ -283,12 +297,13 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+            'format': '%(asctime)s|%(levelname)s|%(name)s|%(module)s|%(funcName)s|%(process)d|%(thread)d|%(message)s',
+            'datefmt': '%Y%m%d-%H:%M:%S',
         },
         'simple': {
             'format': '%(levelname)s %(message)s'
         },
-     },
+    },
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -310,18 +325,15 @@ LOGGING = {
     'loggers': {
         'django.request': {
             'handlers': ['mail_admins', 'console'],
-            'level': 'INFO',
-            'propagate': True,
+            'level': 'DEBUG',
         },
         'django.db.backends': {
             'handlers': ['console'],
             'level': 'INFO',
-            'propagate': True,
         },
-        'compendia': {
-            'handlers': ['console'],
+        'researchcompendia': {
+            'handlers': ['mail_admins', 'console'],
             'level': 'DEBUG',
-            'propagate': True,
         },
     },
 }

@@ -1,13 +1,32 @@
-{% extends "base.html" %}    
+{% extends "base.html" %}
 {% load i18n %}
 {% load home_tags %}
 {% load envelope_tags %}
 {% load staticfiles %}
 {% load crispy_forms_tags %}
 {% block title %}Create A Compendium{% endblock %}
-
+{% block extra_css %}
+{% endblock extra_css %}
 {% block content %}
 
+<div class="row">
+
+
+<div class="col-sm-2">
+</div>
+
+
+<div class="col-sm-8">
+<form class="form-horizontal" id="doi_form" role="form">
+<div class="input-group" id="doi_group">
+  <input type="text" class="form-control" placeholder="Input DOI and return">
+</div>
+</form>
+</div>
+
+
+</div>
+{{ form.media }}
 
 {% crispy form %}
 
@@ -31,10 +50,46 @@ $( "#doi_form" ).submit(function(event) {
       data: { doi: doi_query },
       headers: { "X-CSRFToken": csrftoken }
   })
-  .done(function (msg ) {
+  .done(function (msg) {
       console.log(msg);
+      if (msg.msg != "ok") {
+        console.log(msg.msg);
+        return;
+      }
+      if (msg.doi) {
+        $("#id_doi").attr("value", msg.doi);
+      }
+      if (msg.compendia.title) {
+        $("#id_title").attr("value", msg.compendia.title);
+      }
+      if (msg.compendia.article_url) {
+        $("#id_article_url").attr("value", msg.compendia.article_url);
+      }
+      if (msg.compendia.journal) {
+        $("#id_journal").attr("value", msg.compendia.journal);
+      }
+      if (msg.compendia.authortext) {
+        $("#id_authors_text").text(msg.compendia.authortext);
+      }
+      if (msg.compendia.collaborators) {
+        $("#id_authorship").text({"collaborators": [msg.compendia.collaborators]});
+      }
+      if (msg.compendia.month) {
+        $("#id_month").attr("value", msg.compendia.month);
+      }
+      if (msg.compendia.year) {
+        $("#id_year").attr("value", msg.compendia.year);
+      }
+      if (msg.compendia.volume) {
+        $("#id_volume").attr("value", msg.compendia.volume);
+      }
+      if (msg.compendia.issue) {
+        $("#id_number").attr("value", msg.compendia.issue);
+      }
+      if (msg.compendia.pages) {
+        $("#id_pages").attr("value", msg.compendia.pages);
+      }
   });
-
 });
 
 </script>

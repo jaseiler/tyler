@@ -1,10 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import logging
 import re
+from urllib import quote
 
 from bs4 import BeautifulSoup
 import requests
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('researchcompendia.lib')
 
 """
 This is an unsophisticated library to parse responses from the crossref query servlet.
@@ -33,12 +37,12 @@ Publishers return information in unixref1.0 or unixref1.1.
 """
 
 
-def query(pid, doi_param, timeout=0.60):
+def query(pid, doi_param, timeout=1.0):
     """ returns a dictionary optionally populated with Article and Collaborator attributes
 
     pid: a validated username for the crossref query service
     doi: a doi query string from the client
-    timeout: time in seconds that we are willing to wait for an answer. default is 60 milliseconds.
+    timeout: time in seconds that we are willing to wait for an answer. default is 800 milliseconds.
 
     exceptions: no exception or error from this call should affect the client.
     It catches problems and moves on.
@@ -76,25 +80,24 @@ def query(pid, doi_param, timeout=0.60):
             'noredirect': True,
             'id': doi,
             'format': 'unixsd', },
-            timeout=timeout)
+            #timeout=timeout
+        )
     except requests.exceptions.RequestException:
-        logger.warning('crossref requests exception')
+        logger.warning('crossref requests exception', exc_info=True)
         return {'msg': 'requests exception', 'status': 500}
 
     if not r.ok:
         logger.warning('crossref exception %s', r)
         return {'msg': 'crossref exception', 'status': r.status_code, 'xml': r.text}
 
-    response = {'msg': 'ok', 'status': r.status_code, 'unixsd': r.text}
+    response = {'msg': 'ok', 'status': r.status_code, 'doi': doi}
 
-    response.update(parse_crossref_output(r.text))
-
+    logger.debug(quote(r.content))
+    response.update(parse_crossref_output(r.content))
     return response
 
 
 def parse_crossref_output(xml):
-    logger.debug('crossref output: %s', xml)
-
     # I'm using 'xml' instead of 'lxml' because 'lxml' ignores CDATA,
     # but 'xml' turns CDATA in to text elements
     soup = BeautifulSoup(xml, 'xml')
@@ -155,7 +158,21 @@ def parse_journal_article(soup):
 
     if soup.full_title is not None:
         result['journal'] = soup.full_title.text
-
+    if soup.month is not None:
+        result['month'] = soup.month.text
+    if soup.year is not None:
+        result['year'] = soup.year.text
+    if soup.volume is not None:
+        result['volume'] = soup.volume.text
+    if soup.issue is not None:
+        result['issue'] = soup.issue.text
+        result['number'] = soup.issue.text
+    if soup.first_page is not None:
+        pages = soup.first_page.text
+        if soup.last_page is not None:
+            endash = u'\u2013'
+            pages = u'%s%s%s' % (pages, endash, soup.last_page.text)
+        result['pages'] = pages
     if soup.journal_article is not None and 'publication_type' in soup.journal_article.attrs:
         result['publication_type'] = soup.journal_article['publication_type']
     return result
@@ -163,10 +180,17 @@ def parse_journal_article(soup):
 
 def parse_contributors(soup):
     collaborators = []
+    names = []
     for contributor in soup.find_all('person_name'):
         person = parse_person(contributor)
         collaborators.append(person)
-    return {'collaborators': collaborators}
+        names.append(parse_name(person))
+    authortext = ', '.join([name for name in names if name != ' '])
+    return {'collaborators': collaborators, 'authortext': authortext}
+
+
+def parse_name(person):
+    return ' '.join([person.get('given_name', ''), person.get('surname', '')])
 
 
 def parse_person(contributor):
@@ -196,3 +220,14 @@ def match_doi(query):
     result = match.group(0)
     logger.debug('query: %s result: %s', query, result)
     return result
+
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('doi', help='well-formed DOI for query')
+    parser.add_argument('--pid', help='crossref account')
+    parser.add_argument('--timeout', default=0.8, type=float, help='requests timeout')
+    args = parser.parse_args()
+    r = query(args.pid, args.doi, timeout=args.timeout)
+    print(r)

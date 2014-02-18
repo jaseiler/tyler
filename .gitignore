@@ -3,7 +3,9 @@
 *.swp
 *~
 
-# heroku admin settings
+.vagrant
+
+# admin settings
 .env
 env
 
@@ -14,6 +16,7 @@ docs/companionpages.*
 
 # collectstatic
 staticfiles
+media
 
 # virtualenv
 venv

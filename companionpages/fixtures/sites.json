@@ -1,0 +1,26 @@
+[
+    {
+        "fields": {
+            "domain": "127.0.0.1:8000",
+            "name": "ResearchCompendia Local"
+        },
+        "model": "sites.site",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "domain": "researchcompendia.org",
+            "name": "ResearchCompendia"
+        },
+        "model": "sites.site",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "domain": "labs.researchcompendia.org",
+            "name": "ResearchCompendia Labs"
+        },
+        "model": "sites.site",
+        "pk": 3
+    }
+]
