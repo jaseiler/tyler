@@ -1,10 +1,6 @@
 from django.conf.urls import patterns, include, url
-
-import autocomplete_light
-#autocomplete_light.registry.autocomplete_model_base = YourAutocompleteModelBase
-autocomplete_light.autodiscover()
-
 from django.contrib import admin
+
 from compendia.views import ArticleDetailView
 
 
@@ -12,11 +8,6 @@ admin.autodiscover()
 
 urlpatterns = patterns(
     '',
-    #url(r'^$', HomeView.as_view(), name='rmc_home'),
-    #url(r'^contact/', ContactView.as_view(template_name='contact.html'),
-        name='envelope-contact'),
-    #url(r'^faq/', FaqView.as_view(), name='rmc_faq'),
-    url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^api/v1/', include('api.urls')),
     url(r'^users/', include("users.urls", namespace="users")),
     url(r'^accounts/', include('allauth.urls')),
