@@ -1,0 +1,22 @@
+{% load tz %}
+
+{% block content %}
+
+{% if companion_article_list %}
+<h2>Companion Sites</h2>
+<ul class="list-group">
+  {% localtime on %}
+  {% for site in companion_article_list %}
+
+  <li class="list-group-item">
+  <em>{{ site.title }}</em>
+  {{ site.corresponding_author }}
+  {{ site.modified|date:"SHORT_DATE_FORMAT" }}
+  <a href="{% url 'rmc_companionpage' site.id %}">{{ site.id }}</a>
+  </li>
+
+  {% endfor %}
+  {% endlocaltime %}
+</ul>
+{% endif %}
+{% endblock content %}

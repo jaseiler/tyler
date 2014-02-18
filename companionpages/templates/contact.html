@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load crispy_forms_tags %}
+
 {% load envelope_tags %}
 {% block content %}
 <section id="contact">
   <h1>{% trans "Contact" %}</h1>
-  <form action="{% url 'home:contact' %}" method="post">
+  <form action="{% url 'envelope-contact' %}" method="post">
   {% csrf_token %}
   {% antispam_fields %}
     <fieldset>
       <table>
         <tbody>
-        {{ form|crispy }}
+        {{ form }}
         </tbody>
         <tfoot>
          <tr>
